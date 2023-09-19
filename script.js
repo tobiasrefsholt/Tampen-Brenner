@@ -10,18 +10,7 @@ const model = {
         y: null
     },
     distance: null,
-    backgroundColors: {
-        start: {
-            red: 0,
-            green: 255,
-            blue: 255
-        },
-        end: {
-            red: 255,
-            green: 0,
-            blue: 0,
-        }
-    }
+    backgroundColor: null
 }
 
 
@@ -43,34 +32,33 @@ function updateView() {
 
     app.innerHTML = /* html */`
         <span>MousePosition: x: ${model.mousePosition.x}, y: ${model.mousePosition.y}</span>
-        <br>
         <span>TargetPoint: x: ${model.targetPoint.x}, y: ${model.targetPoint.y}</span>
-        <br>
         <span>Distance: ${model.distance}</span>
     `;
-    app.style.backgroundColor = getBackgroundColor();
+    app.style.backgroundColor = model.backgroundColor;
 }
 
 
 // Controller
 function init() {
-    let targetPoint = getTargetPoint();
-    model.targetPoint.x = targetPoint.x;
-    model.targetPoint.y = targetPoint.y;
+    const {x, y} = getTargetPoint();
+    model.targetPoint.x = x;
+    model.targetPoint.y = y;
 }
 
 function getTargetPoint() {
     return {
-        x: getRandomNumber(1, (window.innerWidth - model.targetPoint.pointSize)),
-        y: getRandomNumber(1, (window.innerHeight - model.targetPoint.pointSize)),
+        x: getRandomNumber(model.targetPoint.pointSize, (window.innerWidth - model.targetPoint.pointSize)),
+        y: getRandomNumber(model.targetPoint.pointSize, (window.innerHeight - model.targetPoint.pointSize)),
     }
 }
 
 function calcDistance() {
-    model.distance = Math.sqrt(
+    let distance = Math.sqrt(
         (model.targetPoint.x - model.mousePosition.x)*(model.targetPoint.x - model.mousePosition.x)
         + (model.targetPoint.y - model.mousePosition.y)*(model.targetPoint.y - model.mousePosition.y)
     );
+    return distance;
 }
 
 function getBackgroundColor() {
@@ -88,8 +76,8 @@ function getRandomNumber(min, max) {
 function onMouseMove(event) {
     model.mousePosition.x = event.clientX;
     model.mousePosition.y = event.clientY;
-    calcDistance();
-    /* model.backgroundColor = getBackgroundColor(); */
+    model.distance = calcDistance();
+    model.backgroundColor = getBackgroundColor();
     updateView();
 }
 
